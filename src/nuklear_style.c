@@ -436,6 +436,7 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     chart->selected_color   = table[NK_COLOR_CHART_COLOR_HIGHLIGHT];
     chart->color            = table[NK_COLOR_CHART_COLOR];
     chart->padding          = nk_vec2(4,4);
+    chart->column_padding   = nk_vec2(0,0);
     chart->border           = 0;
     chart->rounding         = 0;
 

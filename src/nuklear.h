@@ -4888,6 +4888,7 @@ struct nk_style_chart {
     float border;
     float rounding;
     struct nk_vec2 padding;
+    struct nk_vec2 column_padding;
 };
 
 struct nk_style_combo {

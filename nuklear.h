@@ -5109,6 +5109,7 @@ struct nk_style_chart {
     float border;
     float rounding;
     struct nk_vec2 padding;
+    struct nk_vec2 column_padding;
 };
 
 struct nk_style_combo {
@@ -18310,6 +18311,7 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     chart->selected_color   = table[NK_COLOR_CHART_COLOR_HIGHLIGHT];
     chart->color            = table[NK_COLOR_CHART_COLOR];
     chart->padding          = nk_vec2(4,4);
+    chart->column_padding   = nk_vec2(0,0);
     chart->border           = 0;
     chart->rounding         = 0;
 
@@ -27868,6 +27870,7 @@ nk_chart_push_column(const struct nk_context *ctx, struct nk_window *win,
     struct nk_command_buffer *out = &win->buffer;
     const struct nk_input *in = &ctx->input;
     struct nk_panel *layout = win->layout;
+    const struct nk_style_chart *style;
 
     float ratio;
     nk_flags ret = 0;
@@ -27894,6 +27897,10 @@ nk_chart_push_column(const struct nk_context *ctx, struct nk_window *win,
     }
     item.x = chart->x + ((float)chart->slots[slot].index * item.w);
     item.x = item.x + ((float)chart->slots[slot].index);
+
+    style = &ctx->style.chart;
+    item.x = item.x + style->column_padding.x;
+    item.w = item.w - (style->column_padding.x * 2);
 
     /* user chart bar selection */
     if (!(layout->flags & NK_WINDOW_ROM) &&
