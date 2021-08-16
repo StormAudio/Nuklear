@@ -16433,11 +16433,13 @@ nk_font_bake_pack(struct nk_font_baker *baker,
     }
     /* setup font baker from temporary memory */
     for (config_iter = config_list; config_iter; config_iter = config_iter->next) {
-        struct stbtt_fontinfo *font_info = &baker->build[i++].info;
         it = config_iter;
-        font_info->userdata = alloc;
-        do {if (!stbtt_InitFont(font_info, (const unsigned char*)it->ttf_blob, 0))
-            return nk_false;
+        do {
+            struct stbtt_fontinfo *font_info = &baker->build[i++].info;
+            font_info->userdata = alloc;
+
+            if (!stbtt_InitFont(font_info, (const unsigned char*)it->ttf_blob, 0))
+                return nk_false;
         } while ((it = it->n) != config_iter);
     }
     *height = 0;
@@ -19024,7 +19026,7 @@ nk_pool_init_fixed(struct nk_pool *pool, void *memory, nk_size size)
     NK_ASSERT(size >= sizeof(struct nk_page));
     if (size < sizeof(struct nk_page)) return;
     /* first nk_page_element is embedded in nk_page, additional elements follow in adjacent space */
-    pool->capacity = 1 + (unsigned)(size - sizeof(struct nk_page)) / sizeof(struct nk_page_element);
+    pool->capacity = (unsigned)(1 + (size - sizeof(struct nk_page)) / sizeof(struct nk_page_element));
     pool->pages = (struct nk_page*)memory;
     pool->type = NK_BUFFER_FIXED;
     pool->size = size;
@@ -19330,8 +19332,8 @@ nk_panel_begin(struct nk_context *ctx, const char *title, enum nk_panel_type pan
 
     /* window movement */
     if ((win->flags & NK_WINDOW_MOVABLE) && !(win->flags & NK_WINDOW_ROM)) {
-        int left_mouse_down;
-        int left_mouse_clicked;
+        nk_bool left_mouse_down;
+        unsigned int left_mouse_clicked;
         int left_mouse_click_in_cursor;
 
         /* calculate draggable window space */
@@ -19346,7 +19348,7 @@ nk_panel_begin(struct nk_context *ctx, const char *title, enum nk_panel_type pan
 
         /* window movement by dragging */
         left_mouse_down = in->mouse.buttons[NK_BUTTON_LEFT].down;
-        left_mouse_clicked = (int)in->mouse.buttons[NK_BUTTON_LEFT].clicked;
+        left_mouse_clicked = in->mouse.buttons[NK_BUTTON_LEFT].clicked;
         left_mouse_click_in_cursor = nk_input_has_mouse_click_down_in_rect(in,
             NK_BUTTON_LEFT, header, nk_true);
         if (left_mouse_down && left_mouse_click_in_cursor && !left_mouse_clicked) {
@@ -21313,6 +21315,8 @@ nk_layout_row_calculate_usable_space(const struct nk_style *style, enum nk_panel
 
     struct nk_vec2 spacing;
 
+    NK_UNUSED(type);
+
     spacing = style->window.spacing;
 
     /* calculate the usable panel space */
@@ -21863,7 +21867,7 @@ nk_layout_widget_space(struct nk_rect *bounds, const struct nk_context *ctx,
     panel_space = nk_layout_row_calculate_usable_space(&ctx->style, layout->type,
                                             layout->bounds.w, layout->row.columns);
 
-    #define NK_FRAC(x) (x - (int)x) /* will be used to remove fookin gaps */
+    #define NK_FRAC(x) (x - (float)(int)x) /* will be used to remove fookin gaps */
     /* calculate the width of one item inside the current layout space */
     switch (layout->row.type) {
     case NK_LAYOUT_DYNAMIC_FIXED: {
@@ -25072,7 +25076,7 @@ nk_scrollbar_behavior(nk_flags *state, struct nk_input *in,
 {
     nk_flags ws = 0;
     int left_mouse_down;
-    int left_mouse_clicked;
+    unsigned int left_mouse_clicked;
     int left_mouse_click_in_cursor;
     float scroll_delta;
 
@@ -26855,7 +26859,7 @@ nk_do_edit(nk_flags *state, struct nk_command_buffer *out,
                     /* vertical scroll */
                     if (cursor_pos.y < edit->scrollbar.y)
                         edit->scrollbar.y = NK_MAX(0.0f, cursor_pos.y - row_height);
-                    if (cursor_pos.y >= edit->scrollbar.y + area.h)
+                    if (cursor_pos.y >= edit->scrollbar.y + row_height)
                         edit->scrollbar.y = edit->scrollbar.y + row_height;
                 } else edit->scrollbar.y = 0;
             }
@@ -29180,6 +29184,9 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 ///    - [yy]: Minor version with non-breaking API and library changes
 ///    - [zz]: Bug fix version with no direct changes to API
 ///
+/// - 2021/08/08 (4.07.3) - Fix crash when baking merged fonts
+/// - 2021/08/08 (4.07.2) - Fix Multiline Edit wrong offset
+/// - 2021/03/17 (4.07.1) - Fix warning about unused parameter
 /// - 2021/03/17 (4.07.0) - Fix nk_property hover bug
 /// - 2021/03/15 (4.06.4) - Change nk_propertyi back to int
 /// - 2021/03/15 (4.06.3) - Update documentation for functions that now return nk_bool
@@ -29508,4 +29515,3 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 /// in libraries and brought me to create some of my own. Finally Apoorva Joshi
 /// for his single header file packer.
 */
-
