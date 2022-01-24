@@ -2,20 +2,22 @@
 BIN = demo
 
 # Flags
-CFLAGS += -std=c89 -Wall -Wextra -pedantic -O2
+CFLAGS += -std=c89 -pedantic -O0
+CFLAGS += `sdl2-config --cflags`
 
 SRC = main.c
 OBJ = $(SRC:.c=.o)
 
 ifeq ($(OS),Windows_NT)
-BIN := $(BIN).exe
-LIBS = -lglfw3 -lopengl32 -lm -lGLU32
+#TODO
+#BIN := $(BIN).exe
+#LIBS = -lmingw32 -lSDL2main -lSDL2 -lopengl32 -lm -lGLU32
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Darwin)
-		LIBS := -lglfw3 -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo -lm -lGLEW -L/usr/local/lib
+#TODO		LIBS = -lSDL2 -framework OpenGL -lm
 	else
-		LIBS = -lglfw -lGL -lm -lGLU
+		LIBS += -lm -ldl `sdl2-config --libs`
 	endif
 endif
 
