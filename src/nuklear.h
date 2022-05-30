@@ -244,6 +244,7 @@ struct nk_style_progress;
 struct nk_style_scrollbar;
 struct nk_style_edit;
 struct nk_style_property;
+struct nk_style_vumeter;
 struct nk_style_chart;
 struct nk_style_combo;
 struct nk_style_tab;
@@ -3260,6 +3261,13 @@ NK_API void nk_edit_focus(struct nk_context*, nk_flags flags);
 NK_API void nk_edit_unfocus(struct nk_context*);
 /* =============================================================================
  *
+ *                                  VUMETER
+ *
+ * ============================================================================= */
+NK_API void nk_vumeter_colored(struct nk_context *ctx, struct nk_color color, float value, float min_value, float max_value);
+NK_API void nk_vumeter(struct nk_context *ctx, float value, float min_value, float max_value);
+/* =============================================================================
+ *
  *                                  CHART
  *
  * ============================================================================= */
@@ -3392,6 +3400,8 @@ enum nk_style_colors {
     NK_COLOR_EDIT,
     NK_COLOR_EDIT_CURSOR,
     NK_COLOR_COMBO,
+    NK_COLOR_VUMETER,
+    NK_COLOR_VUMETER_BAR,
     NK_COLOR_CHART,
     NK_COLOR_CHART_COLOR,
     NK_COLOR_CHART_COLOR_HIGHLIGHT,
@@ -4911,6 +4921,18 @@ struct nk_style_property {
     void(*draw_end)(struct nk_command_buffer*, nk_handle);
 };
 
+struct nk_style_vumeter {
+    /* color */
+    struct nk_style_item background;
+    struct nk_color border_color;
+    struct nk_color color;
+
+    /* properties */
+    float border;
+    float rounding;
+    struct nk_vec2 padding;
+};
+
 struct nk_style_chart {
     /* colors */
     struct nk_style_item background;
@@ -5062,6 +5084,7 @@ struct nk_style {
     struct nk_style_progress progress;
     struct nk_style_property property;
     struct nk_style_edit edit;
+    struct nk_style_vumeter vumeter;
     struct nk_style_chart chart;
     struct nk_style_scrollbar scrollh;
     struct nk_style_scrollbar scrollv;
