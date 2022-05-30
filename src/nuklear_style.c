@@ -28,6 +28,8 @@ NK_API void nk_style_default(struct nk_context *ctx){nk_style_from_table(ctx, 0)
     NK_COLOR(NK_COLOR_EDIT,                     38, 38, 38, 255)  \
     NK_COLOR(NK_COLOR_EDIT_CURSOR,              175,175,175,255) \
     NK_COLOR(NK_COLOR_COMBO,                    45, 45, 45, 255) \
+    NK_COLOR(NK_COLOR_VUMETER,                  45, 45, 45, 255) \
+    NK_COLOR(NK_COLOR_VUMETER_BAR,              38, 38, 38, 255) \
     NK_COLOR(NK_COLOR_CHART,                    120,120,120,255) \
     NK_COLOR(NK_COLOR_CHART_COLOR,              45, 45, 45, 255) \
     NK_COLOR(NK_COLOR_CHART_COLOR_HIGHLIGHT,    255, 0,  0, 255) \
@@ -100,6 +102,7 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     struct nk_style_edit *edit;
     struct nk_style_property *property;
     struct nk_style_combo *combo;
+    struct nk_style_vumeter *vumeter;
     struct nk_style_chart *chart;
     struct nk_style_tab *tab;
     struct nk_style_window *win;
@@ -447,6 +450,16 @@ nk_style_from_table(struct nk_context *ctx, const struct nk_color *table)
     chart->column_padding   = nk_vec2(0,0);
     chart->border           = 0;
     chart->rounding         = 0;
+
+    /* vumeter */
+    vumeter = &style->vumeter;
+    nk_zero_struct(*vumeter);
+    vumeter->background     = nk_style_item_color(table[NK_COLOR_VUMETER]);
+    vumeter->border_color   = table[NK_COLOR_BORDER];
+    vumeter->color          = table[NK_COLOR_VUMETER_BAR];;
+    vumeter->border         = 0;
+    vumeter->rounding       = 0;
+    vumeter->padding        = nk_vec2(4,4);
 
     /* combo */
     combo = &style->combo;
